@@ -24,7 +24,24 @@ void TIMERinit(){
     IEC0bits.T2IE = 1; // enable timer2 interrupt 
 
     /******************TIMER 3**********************/
+    // configure timer 3 for the sample rate
+    T3CONbits.TCKPS = 0b11; // 1:256 scaling, means ~2 cycles is 1 ms
+    T3CONbits.TCS = 0;
+    T3CONbits.TSIDL = 0; // timer continues in idle mode
+    T3CONbits.TGATE = 0; // not sure what gate accumulation is
+    // configure timer2 interrupt
+    IPC2bits.T3IP = 2; // second lowest priority
+    IFS0bits.T3IF = 0; // reset timer interrupt flag
+    IEC0bits.T3IE = 1; // enable timer3 interrupt 
     
+}
+
+void run_timer3(uint16_t sample_rate){
+    // asserts for clk 500kHz and timer configured
+    
+    PR3 = (uint16_t)(ms*((float)250/256)); // put the closest number of cycles to the actual time
+    TMR3 = 0;
+    T3CONbits.TON = 1; // start the timer
 }
 
 // general delay function

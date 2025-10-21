@@ -72,6 +72,7 @@ extern "C" {
     void TIMERinit();
     void delay_ms(uint16_t ms);
     void delay_ms_itp(uint16_t ms);
+    void run_timer3(uint16_t sample_rate);
 
 #ifdef	__cplusplus
 }

@@ -161,6 +161,7 @@ void run_mode1_sending(){
     while(!CN_event){ // send data until CN event
         // start a timer to go off every sample period ms
         
+        
         adc_val = do_adc();
         
         Disp2Dec(adc_val);
@@ -168,7 +169,8 @@ void run_mode1_sending(){
         
         Idle(); // idle until the timer goes off for our next sample rate 
     }
-    switch(IOCheck()){
+    T3CONbits.TON = 0; // turn off the timer
+    switch(IOCheck()){ // handle the IO
         case 0b10:
             prog_st = MODE0;
             break;
@@ -188,6 +190,10 @@ void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void){
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
     //Don't forget to clear the timer 3 interrupt flag!
     IFS0bits.T3IF = 0;
+    
+    // turn the timer back on
+    TMR3 = 0;
+    T3CONbits.TON = 1;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
