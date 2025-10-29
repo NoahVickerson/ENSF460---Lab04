@@ -57,6 +57,7 @@ void delay_ms(uint16_t ms){
     
     // idle while waiting, restarting idle until timer is finished or otherwise cut short
     while(!TIMER2_event) Idle();
+    T2CONbits.TON = 0; // stop the timer
 }
 
 // delay function that will be cut short by the CN interrupt
@@ -72,4 +73,5 @@ void delay_ms_itp(uint16_t ms){
     
     // idle while waiting, restarting idle until timer is finished or otherwise cut short
     while(!TIMER2_event && !CN_event) Idle();
+    T2CONbits.TON = 0; // stop the timer
 }
