@@ -101,10 +101,13 @@ int main(void) {
     while(1) {
         switch(prog_st){
             case MODE0:
+                run_mode0();
                 break;
             case MODE1_waiting:
+                run_mode1_waiting();
                 break;
             case MODE1_sending:
+                run_mode1_sending()
                 break;
         }       
     }
@@ -125,7 +128,7 @@ void run_mode0(){
             prev_adc = adc_val;
             
             // calculate the number of characters we want to add based on this value
-            // we want 1-17 characters so divide the number by 4096 (or left shift by 12)
+            // we want 1-16 characters so divide the number by 4096 (or left shift by 12)
             // and then add one
             uint8_t num_chars = (adc_val >> 12) + 1;
 
@@ -160,7 +163,7 @@ void run_mode1_sending(){
     uint16_t adc_val;
     while(!CN_event){ // send data until CN event
         // start a timer to go off every sample period ms
-        
+        run_timer3(100);
         
         adc_val = do_adc();
         
@@ -193,7 +196,7 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
     
     // turn the timer back on
     TMR3 = 0;
-    T3CONbits.TON = 1;
+    T3CONbits.TON = 1; // dont think this is necessary
 }
 
 void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
