@@ -17,8 +17,8 @@ uint16_t do_adc(void)
     AD1CON1bits.ADON = 0;          // ensure module OFF during config
 
     AD1PCFG = 0xFFFF;              // all digital first
-    AD1PCFGbits.PCFG5 = 0;         // AN5 analog (pin 8 / RA3)
-    TRISAbits.TRISA3 = 1;          // RA3 input
+    AD1PCFGbits.PCFG4 = 0;         // AN4 analog (pin 7)
+    TRISAbits.TRISA2 = 1;          // RA2 input
 
     // AD1CON1: sample/convert control (SW-triggered, auto-convert)
     AD1CON1bits.FORM  = 0b00;      // integer, right-justified
@@ -39,14 +39,15 @@ uint16_t do_adc(void)
 
     // Channel select: CH0 +input = AN5, -input = Vref-
     AD1CHSbits.CH0NA  = 0;         // Vref-
-    AD1CHSbits.CH0SA  = 5;         // AN5 (pin 8 / RA3)  (slide shows AN5 path) :contentReference[oaicite:4]{index=4}
+    AD1CHSbits.CH0SA  = 4;         // AN4 (pin 7)  (slide shows AN5 path) :contentReference[oaicite:4]{index=4}
 
     /* ------------- ADC SAMPLING AND CONVERSION ------------------*/
-    AD1CON1bits.SAMP = 1;          // start sampling (auto-convert after SAMC)
     AD1CON1bits.ADON = 1;          // **turn ON** ADC module (note: slides show this step) 
+    AD1CON1bits.SAMP = 1;          // start sampling (auto-convert after SAMC)
+    
 
     while (AD1CON1bits.DONE == 0)  // poll until conversion complete (slide)
-        ;
+    {}
 
     ADCvalue = ADC1BUF0 & 0x03FF;  // 10-bit ADC result
     AD1CON1bits.SAMP = 0;          // stop sampling

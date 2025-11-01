@@ -66,15 +66,6 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
-    
-    
-    typedef enum {
-      LED_bHalfSec,
-      LED_b1Sec,
-      LED_b4Sec,
-      LED_ON,
-      LED_OFF
-    }state_t;
 
     // TODO If C++ is being used, regular C code needs function names to have C 
     // linkage so the functions can be used by the c code. 

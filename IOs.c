@@ -8,7 +8,7 @@
 #include "IOs.h"
 #include "TIMERs.h"
 
-extern CN_event;
+extern uint8_t CN_event;
 
 void IOinit()
 {
@@ -30,7 +30,7 @@ void IOinit()
 
 // check the IO states, with a delay (determined by the global defines)
 // returns a 3 bit response of PB1 | PB2 | PB3 
-uint8_t IOCheck(uint8_t check_duration)
+uint8_t IOCheck()
 {  
     //delay_ms(INPUT_CHECK_DELAY_MS); // set a small uninterruptible delay to allow for any button switches to resolve
     return (!PORTBbits.RB7 << 1) | (!PORTAbits.RA4);

@@ -66,6 +66,7 @@ typedef enum {
 state_t prog_st;
 uint8_t CN_event;
 uint8_t TIMER2_event;
+uint8_t button_st;
 
 void run_mode0();
 void run_mode1_waiting();
@@ -107,7 +108,7 @@ int main(void) {
                 run_mode1_waiting();
                 break;
             case MODE1_sending:
-                run_mode1_sending()
+                run_mode1_sending();
                 break;
         }       
     }
@@ -130,16 +131,18 @@ void run_mode0(){
             // calculate the number of characters we want to add based on this value
             // we want 1-16 characters so divide the number by 4096 (or left shift by 12)
             // and then add one
-            uint8_t num_chars = (adc_val >> 12) + 1;
+            uint8_t num_chars = (adc_val >> 6) + 1;
 
             // print out the value via uart
             Disp2String("\rMode 0: ");
             XmitUART2('*', num_chars);
             XmitUART2(' ', 1);
             Disp2Hex(adc_val);
+            XmitUART2(' ', 16-num_chars); // keep the line clean
         }
     }
     if(IOCheck() == 0b10) prog_st = MODE1_waiting;
+    CN_event = 0;
 }
 
 void run_mode1_waiting(){
@@ -151,9 +154,8 @@ void run_mode1_waiting(){
         case 0b01: // pb2, begin sending data
             prog_st = MODE1_sending;
             break;
-        default:
-            return;
     }
+    CN_event = 0;
 }
 
 void run_mode1_sending(){
@@ -161,7 +163,7 @@ void run_mode1_sending(){
     Disp2String("Syncing - sample period (ms): 100\n");
    
     uint16_t adc_val;
-    while(!CN_event){ // send data until CN event
+    while(1){ // send data until CN event
         // start a timer to go off every sample period ms
         run_timer3(100);
         
@@ -170,10 +172,15 @@ void run_mode1_sending(){
         Disp2Dec(adc_val);
         XmitUART2(',', 1);
         
-        Idle(); // idle until the timer goes off for our next sample rate 
+        Idle(); // idle until the timer goes off for our next sample rate
+        
+        if(CN_event){
+            button_st = IOCheck();
+            if(button_st != 0b00) break;
+        }
     }
     T3CONbits.TON = 0; // turn off the timer
-    switch(IOCheck()){ // handle the IO
+    switch(button_st){ // handle the IO
         case 0b10:
             prog_st = MODE0;
             break;
@@ -181,6 +188,7 @@ void run_mode1_sending(){
             prog_st = MODE1_waiting;
             break;
     }
+    CN_event = 0;
 }
 
 
@@ -188,6 +196,7 @@ void run_mode1_sending(){
 void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void){
     //Don't forget to clear the timer 2 interrupt flag!
     IFS0bits.T2IF = 0;
+    TIMER2_event = 1;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
@@ -202,5 +211,6 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
 void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
     //Don't forget to clear the CN interrupt flag!
     IFS1bits.CNIF = 0;
+    CN_event = 1;
 }
 

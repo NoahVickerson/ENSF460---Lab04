@@ -8,7 +8,8 @@
 
 #include "xc.h"
 
-extern TIMER2_event;
+extern uint8_t TIMER2_event;
+extern uint8_t CN_event;
 
 void TIMERinit(){  
     /*******************TIMER 2**********************/
@@ -39,7 +40,7 @@ void TIMERinit(){
 void run_timer3(uint16_t sample_rate){
     // asserts for clk 500kHz and timer configured
     
-    PR3 = (uint16_t)(ms*((float)250/256)); // put the closest number of cycles to the actual time
+    PR3 = (uint16_t)(sample_rate*((float)250/256)); // put the closest number of cycles to the actual time
     TMR3 = 0;
     T3CONbits.TON = 1; // start the timer
 }

@@ -166,7 +166,7 @@ def main():
         print("\n=== Preview (first 10 rows) ===")
         print(df.head(10))
         print("\n=== Summary ===")
-        print(df.describe(numeric_only=True) if not df.empty else "No data.")
+        print(df.describe() if not df.empty else "No data.")
 
     csv_path, xlsx_path = save_outputs(df, stem=args.out)
     print(f"\nSaved CSV:  {csv_path}")

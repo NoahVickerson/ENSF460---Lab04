@@ -199,7 +199,7 @@ void Disp2Dec(uint16_t Dec_num)
         XmitUART2(rem + 0x30 , 1);
         ctr = ctr + 1;
     }
-    XmitUART2(' ',1);  // Disp Gap
+    //XmitUART2(' ',1);  // Disp Gap
     // XmitUART2('\n',1);  // new line
     // XmitUART2('\r',1);  // carriage return
    
@@ -212,7 +212,7 @@ void Disp2String(char *str) //Displays String of characters
     unsigned int i;
    // XmitUART2(0x0A,2);  //LF
    // XmitUART2(0x0D,1);  //CR 
-    for (i=0; i<= strlen(str); i++)
+    for (i=0; i< strlen(str); i++)
     {
           
         XmitUART2(str[i],1);
